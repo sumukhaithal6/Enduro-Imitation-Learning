@@ -26,7 +26,7 @@ def parse_arguments() -> argparse.Namespace:
 
 def main(args: argparse.Namespace) -> None:
     """Learn Enduro."""
-    if args.play:
+    if args.play or args.record:
         RecEnv = Record(
             Enduro(),
             record=args.record,

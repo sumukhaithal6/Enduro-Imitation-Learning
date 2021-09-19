@@ -95,13 +95,14 @@ class Record:
             self.video = VideoRecorder(self.env, str(self.store_path / "video.mp4"))
         self.keyboard = key.KeyStateHandler()
         self.env.viewer.window.push_handlers(self.keyboard)
-        self.actions = np.array([], dtype=np.uint8)
-        self.states = np.array([], dtype=np.uint8)
+        self.actions = []
+        self.states = []
 
     def close(self) -> None:
         """Close game."""
         self.env.close()
-        self.video.close()
+        if self.record:
+            self.video.close()
 
     def record_game(self) -> None:
         """Record a game for a given env."""
@@ -114,8 +115,8 @@ class Record:
             while True:
                 a = self.game.get_action(self.keyboard)
                 s, r, done, info = self.env.step(a)
-                np.append(self.actions, a)
-                np.append(self.states, s)
+                self.actions.append(a)
+                self.states.append(s)
                 total_reward += r
                 if steps % 200 == 0 or done:
                     print("\naction {:+0.2f}".format(a))
@@ -130,8 +131,8 @@ class Record:
         if self.record:
             np.savez_compressed(
                 self.action_state_path,
-                actions=self.actions,
-                states=self.states,
+                actions=np.array(self.actions, dtype=np.uint8),
+                states=np.array(self.states, dtype=np.uint8),
             )
 
 
