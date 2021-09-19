@@ -8,10 +8,11 @@ LICENCE:
 
 from pathlib import Path
 from time import sleep
+import os
 
 import gym
 import numpy as np
-from gym.wrappers.monitor import Monitor
+from gym.wrappers.monitoring.video_recorder import VideoRecorder
 from pyglet.window import key
 
 
@@ -86,10 +87,12 @@ class Record:
         self.record = record
         self.store_path = store_path
         if self.store_path is None:
-            self.store_path = Path("temp/trial_")
+            self.store_path = Path("temp/trial")
+        if not os.path.exists(self.store_path):
+            os.mkdir(self.store_path)
         self.action_state_path = self.store_path / "action_state"
         if self.record:
-            self.env = Monitor(self.env, self.store_path, force=True)
+            self.video = VideoRecorder(self.env, str(self.store_path / "video.mp4"))
         self.keyboard = key.KeyStateHandler()
         self.env.viewer.window.push_handlers(self.keyboard)
         self.actions = np.array([], dtype=np.uint8)
@@ -98,6 +101,7 @@ class Record:
     def close(self) -> None:
         """Close game."""
         self.env.close()
+        self.video.close()
 
     def record_game(self) -> None:
         """Record a game for a given env."""
@@ -117,6 +121,8 @@ class Record:
                     print("\naction {:+0.2f}".format(a))
                     print(f"step {steps} total_reward {total_reward:+0.2f}")
                 steps += 1
+                if self.record:
+                    self.video.capture_frame()
                 isopen = self.env.render(mode="human")
                 if done or restart or not isopen:
                     break
