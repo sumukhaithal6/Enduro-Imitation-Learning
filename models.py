@@ -20,8 +20,8 @@ class SimpleNet(nn.Module):
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(29008, 120)
-        self.fc2 = nn.Linear(120, 8)
-        self.fc3 = nn.Linear(8, 4)
+        self.fc2 = nn.Linear(120, 64)
+        self.fc3 = nn.Linear(64, 9)
 
     def forward(self, x):
         """Forward call."""
