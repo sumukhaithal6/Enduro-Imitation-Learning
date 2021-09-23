@@ -24,23 +24,22 @@ def model_play(model: torch.nn.Module, game: Game_type, args: Namespace):
     )
     model.eval()
     data_transforms = transforms.ToTensor()
-    isopen = True
-    while isopen:
-        cur_state = data_transforms(env.reset()).unsqueeze(0)
-        total_reward = 0.0
-        steps = 0
-        while True:
-            with torch.no_grad():
-                a = model(cur_state.to(args.device)).cpu()
-                a = a.argmax(dim=1)
-            s, r, done, info = env.step(a)
-            cur_state = data_transforms(s).unsqueeze(0)
-            total_reward += r
-            if steps % 200 == 0 or done:
-                print("\naction ", a)
-                print(f"step {steps} total_reward {total_reward:+0.2f}")
-            steps += 1
-            video.capture_frame()
-            isopen = env.render(mode="human")
-            if done or not isopen:
-                break
+    cur_state = data_transforms(env.reset()).unsqueeze(0)
+    total_reward = 0.0
+    steps = 0
+    while True:
+        with torch.no_grad():
+            a = model(cur_state.to(args.device)).cpu()
+            a = a.argmax(dim=1)
+        s, r, done, info = env.step(a)
+        cur_state = data_transforms(s).unsqueeze(0)
+        total_reward += r
+        if steps % 200 == 0 or done:
+            print("\naction ", a)
+            print(f"step {steps} total_reward {total_reward:+0.2f}")
+        steps += 1
+        video.capture_frame()
+        if args.watch:
+            env.render(mode="human")
+        if done:
+            break

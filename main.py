@@ -33,6 +33,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--model_path", type=Path, default="models/")
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--learning_rate", type=float, default=0.01)
+    parser.add_argument("--watch", action="store_true")
     return parser.parse_args()
 
 
@@ -65,8 +66,9 @@ def main(args: argparse.Namespace) -> None:
             momentum=0.9,
         )
         trainer(model, loader, optimizer, args)
+    model.load_state_dict(torch.load((args.model_path / args.trial_name / "model.pth")))
     model_play(
-        torch.load(args.model_path / args.trial_name / "model.pth"),
+        model,
         Enduro(),
         args,
     )
