@@ -13,7 +13,18 @@ import os
 import gym
 import numpy as np
 from gym.wrappers.monitoring.video_recorder import VideoRecorder
-from pyglet.window import key
+
+try:
+    from pyglet.window import key
+except Exception:
+
+    class key:
+        """Import fails on colab."""
+
+        class KeyStateHandler:
+            """Type class."""
+
+            pass
 
 
 class Game_type:
@@ -83,7 +94,7 @@ class Record:
         """Ctor."""
         self.game = game
         self.env = gym.make(game.name)
-        self.env.render(mode="human")
+        self.env.reset()
         self.record = record
         self.store_path = store_path
         if self.store_path is None:
@@ -92,7 +103,10 @@ class Record:
             os.mkdir(self.store_path)
         self.action_state_path = self.store_path / "action_state"
         if self.record:
-            self.video = VideoRecorder(self.env, str(self.store_path / "video.mp4"))
+            self.video = VideoRecorder(
+                self.env,
+                str(self.store_path / "video.mp4"),
+            )
         self.keyboard = key.KeyStateHandler()
         self.env.viewer.window.push_handlers(self.keyboard)
         self.actions = []
