@@ -10,7 +10,7 @@ import os
 from argparse import Namespace
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 def trainer(
@@ -21,9 +21,9 @@ def trainer(
 ):
     """Train model."""
     loss_fn = nn.CrossEntropyLoss()
-    log_interval = 50
-    if not os.path.exists(args.model_path / args.trial_name):
-        os.mkdir(args.model_path / args.trial_name)
+    log_interval = int(0.25 * len(dataloader))
+    if not os.path.exists(args.model_path / args.train_run_name):
+        os.mkdir(args.model_path / args.train_run_name)
     for epoch in range(args.epochs):
         print(f"Epoch {epoch+1}")
 
@@ -41,5 +41,5 @@ def trainer(
             optimizer.step()
         torch.save(
             model.state_dict(),
-            args.model_path / args.trial_name / "model.pth",
+            args.model_path / args.train_run_name / "model.pth",
         )
