@@ -15,7 +15,7 @@ import torch
 
 from datasets import Enduro_Record
 from games import Enduro
-from models import SimpleNet
+from models import SimpleNet, ResNet18, BigNet
 from train import trainer
 from utils import model_play
 
@@ -32,6 +32,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--train_run_name", type=str, required=True)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--learning_rate", type=float, default=0.01)
+    parser.add_argument("--opt", type=str, default="adam")
     parser.add_argument("--watch", action="store_true")
     return parser.parse_args()
 
@@ -41,18 +42,27 @@ def main(args: argparse.Namespace) -> None:
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on: {args.device}")
 
-    model = SimpleNet().to(args.device)
+    model = ResNet18().to(args.device)
+    # model = BigNet().to(args.device)
 
     if args.train:
-        loader = Enduro_Record(args.store_path / args.trial_name).loader(
+        loader = Enduro_Record(args.store_path, args.trial_name).loader(
             batch_size=args.batch_size,
             num_workers=args.num_workers,
         )
-        optimizer = torch.optim.SGD(
-            model.parameters(),
-            lr=args.learning_rate,
-            momentum=0.9,
-        )
+        if args.opt=="sgd":
+            optimizer = torch.optim.SGD(
+                model.parameters(),
+                lr=args.learning_rate,
+                momentum=0.9,
+                nesterov=True
+            )
+        elif args.opt=="adam":
+            optimizer = torch.optim.Adam(
+                model.parameters(),
+                lr=args.learning_rate,
+            )
+
         trainer(model, loader, optimizer, args)
 
     model.load_state_dict(
