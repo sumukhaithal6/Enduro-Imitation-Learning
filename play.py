@@ -23,8 +23,9 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main(args: argparse.Namespace) -> None:
-    """Learn Enduro."""
+def main() -> None:
+    """Play Enduro."""
+    args = parse_arguments()
     RecEnv = Record(
         Enduro(),
         record=args.record,
@@ -35,5 +36,4 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    args = parse_arguments()
-    main(args)
+    main()

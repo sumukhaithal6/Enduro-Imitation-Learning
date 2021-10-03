@@ -85,7 +85,7 @@ class Record:
             )
 
 
-def main() -> None:
+def test() -> None:
     """Test record on Enduro-v4."""
     recenv = Record(games.Enduro(), record=True)
     recenv.record_game()
@@ -93,4 +93,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    test()
