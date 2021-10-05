@@ -83,6 +83,7 @@ def parse_arguments() -> argparse.Namespace:
         help="Use optuna hyper parameter tuning.",
     )
     parser.add_argument("--watch", action="store_true")
+    parser.add_argument("--model",type=str,required=True,choices=["Big","Simple","ResNet"],help="Model architecture")
     return parser.parse_args()
 
 
@@ -92,9 +93,7 @@ def main() -> None:
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on: {args.device}")
 
-    model_type = ResNet18
-    model_type = BigNet
-    model_type = SimpleNet
+    model_type = {"Big":BigNet,"Simple": SimpleNet, "ResNet": ResNet18}[args.model]
 
     if args.train:
         loader = Enduro_Record(args.store_path, args.trial_names).loader(
@@ -102,7 +101,8 @@ def main() -> None:
             num_workers=args.num_workers,
         )
         trainer(args)(model_type, loader, args)
-    model = model_type().load_state_dict(
+    model = model_type()
+    model.load_state_dict(
         torch.load(
             (args.model_path / args.train_run_name / "model.pth"),
             map_location=args.device,

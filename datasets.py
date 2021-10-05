@@ -16,6 +16,11 @@ from torch import Tensor
 from torch.utils.data import DataLoader, Dataset
 
 
+def crop(img: np.array) -> np.array:
+    """Crop frame to 160x160."""
+    return img[:160, :, :]
+
+
 class Enduro_Record(Dataset):
     """Enduro Dataset."""
 
@@ -39,10 +44,6 @@ class Enduro_Record(Dataset):
 
         self.transforms = target_transforms
         if self.transforms is None:
-
-            def crop(img: np.array) -> np.array:
-                """Crop frame to 160x160."""
-                return img[:160, :, :]
 
             self.transforms = transforms.Compose(
                 [

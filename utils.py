@@ -15,6 +15,7 @@ from gym.wrappers.monitoring.video_recorder import VideoRecorder
 from torchvision import transforms
 
 from games import Game_type
+from datasets import crop
 
 
 def model_play(model: torch.nn.Module, game: Game_type, args: Namespace):
@@ -27,7 +28,7 @@ def model_play(model: torch.nn.Module, game: Game_type, args: Namespace):
         ),
     )
     model.eval()
-    data_transforms = transforms.ToTensor()
+    data_transforms = transforms.Compose([crop, transforms.ToTensor()])
     cur_state = data_transforms(env.reset()).unsqueeze(0)
     total_reward = 0.0
     steps = 0
@@ -43,9 +44,9 @@ def model_play(model: torch.nn.Module, game: Game_type, args: Namespace):
             print(f"step {steps} total_reward {total_reward:+0.2f}")
         steps += 1
         video.capture_frame()
+#        sleep(0.01)
         if args.watch:
             isopen = env.render(mode="human")
-            sleep(0.01)
             if not isopen:
                 break
         if done:
