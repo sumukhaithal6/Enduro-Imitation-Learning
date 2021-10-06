@@ -82,8 +82,19 @@ def parse_arguments() -> argparse.Namespace:
         action="store_true",
         help="Use optuna hyper parameter tuning.",
     )
-    parser.add_argument("--watch", action="store_true")
-    parser.add_argument("--model",type=str,required=True,choices=["Big","Simple","ResNet"],help="Model architecture")
+    parser.add_argument(
+        "--play", action="store_true", help="Let the model play a round."
+    )
+    parser.add_argument(
+        "--watch", action=("store_true"), help=("Open window to see the model's game.")
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        required=True,
+        choices=["Big", "Simple", "ResNet"],
+        help="Model architecture",
+    )
     return parser.parse_args()
 
 
@@ -92,23 +103,24 @@ def main() -> None:
     args = parse_arguments()
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on: {args.device}")
-
-    model_type = {"Big":BigNet,"Simple": SimpleNet, "ResNet": ResNet18}[args.model]
+    model_types = {"Big": BigNet, "Simple": SimpleNet, "ResNet": ResNet18}
+    model = model_types[args.model]().to(args.device)
 
     if args.train:
         loader = Enduro_Record(args.store_path, args.trial_names).loader(
             batch_size=args.batch_size,
             num_workers=args.num_workers,
         )
-        trainer(args)(model_type, loader, args)
-    model = model_type()
+        trainer(args)(model, loader, args)
+
     model.load_state_dict(
         torch.load(
             (args.model_path / args.train_run_name / "model.pth"),
             map_location=args.device,
         )
     )
-    if args.watch:
+
+    if args.play:
         model_play(
             model,
             Enduro(),

@@ -8,7 +8,6 @@ LICENCE:
 
 import os
 from argparse import Namespace
-from typing import Type
 
 import optuna
 import torch
@@ -65,7 +64,7 @@ def trainer(
 
 
 def tune(
-    model_class: Type[nn.Module],
+    model: nn.Module,
     dataloader: torch.utils.data.DataLoader,
     args: Namespace,
 ):
@@ -75,10 +74,10 @@ def tune(
         """Minimize train loss."""
         args.lr = trial.suggest_float("lr", 1e-5, 1e-1, log=True)
         loss = 0.0
-        model = model_class().to(args.device)
         loss_fn = nn.CrossEntropyLoss()
         optimizer = _get_optimizer(model, args)
         for epoch in range(1, args.epochs + 1):
+            print(f"Epoch: {epoch}")
             loss += _train_loop(model, dataloader, args, optimizer, loss_fn)
             trial.report(loss, epoch)
             # Handle pruning based on the intermediate value.
@@ -99,28 +98,24 @@ def tune(
     )
 
     print("Study statistics: ")
-    print("  Number of finished trials: ", len(study.trials))
-    print("  Number of pruned trials: ", len(pruned_trials))
-    print("  Number of complete trials: ", len(complete_trials))
-
+    print("\tNumber of finished trials: ", len(study.trials))
+    print("\tNumber of pruned trials: ", len(pruned_trials))
+    print("\tNumber of complete trials: ", len(complete_trials))
     print("Best trial:")
     trial = study.best_trial
-
-    print("  Value: ", trial.value)
-
-    print("  Params: ")
+    print("\tValue: ", trial.value)
+    print("\tParams: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"{key}: {value}")
 
 
 def train(
-    model_class: Type[nn.Module],
+    model: nn.Module,
     dataloader: torch.utils.data.DataLoader,
     args: Namespace,
 ):
     """Train model."""
     loss_fn = nn.CrossEntropyLoss()
-    model = model_class().to(args.device)
     if not os.path.exists(args.model_path / args.train_run_name):
         os.mkdir(args.model_path / args.train_run_name)
     optimizer = _get_optimizer(model, args)
