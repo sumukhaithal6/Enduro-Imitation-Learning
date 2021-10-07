@@ -23,14 +23,14 @@ Enduro consists of maneuvering a race car in the National Enduro, a long-distanc
 
 Doing so will allow the player to continue racing for the next day. The driver must avoid other racers and pass 200 cars on the first day, and 300 cars with each following day. An episode ends after 150 seconds per level. The game also ends and resets if the player reaches 999.99KM.
 
-#+CAPTION: Activision Enduro Poster
+#+CAPTION: Activision Enduro Poster [[[7]]]
 #+NAME:    Figure 1
-#+ATTR_LATEX: :height 200
+#+ATTR_LATEX: :height 200px
 [[./img/enduro.png]]
 
-#+CAPTION: Enduro Gameplay
+#+CAPTION: Enduro Gameplay [[[8]]]
 #+NAME:    Figure 2
-#+ATTR_LATEX: :height 100
+#+ATTR_LATEX: :height 100px
 [[./img/Enduro_Screenshot.png]]
 
 ** Observation Space
@@ -65,7 +65,7 @@ We played the Enduro game and recorded some gameplay for the model to learn. We 
 of gameplay. This corresponds of 26000 observations and corresponding actions taken by the "expert" human.
 Trials t1 and t2 had completed only level 1 and t3 had completed level 2.
 
-#+CAPTION: Number of actions per Game \n
+#+CAPTION: Number of actions per Game
 #+NAME: Table 1
 |------+----------+------------|
 | Name | Duration | Datapoints |
@@ -146,3 +146,5 @@ We observed that imitation learning is a powerful method to solve challenging re
 4. <<4>> Bellemare, Marc G., et al. "The arcade learning environment: An evaluation platform for general agents." Journal of Artificial Intelligence Research 47 (2013): 253-279.
 5. <<5>> Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, and Masanori Koyama. 2019. Optuna: A Next-generation Hyperparameter Optimization Framework. In KDD [[https://arxiv.org/abs/1907.10902][arXiv]]).
 6. <<6>> Paszke, Adam, et al. "Pytorch: An imperative style, high-performance deep learning library." Advances in neural information processing systems 32 (2019): 8026-8037.
+7. <<7>> [[https://upload.wikimedia.org/wikipedia/en/thumb/8/84/Enduro_Coverart.png/220px-Enduro_Coverart.png][Wikipedia]]
+8. <<8>> [[https://en.wikipedia.org/wiki/File:Enduro_Screenshot.png][Wikipedia]]
