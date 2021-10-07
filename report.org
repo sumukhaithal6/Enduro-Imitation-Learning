@@ -1,0 +1,52 @@
+* Enduro : Imitation Learning
+** Dhruva Kashyap : PES1201801457
+** Sumukh Aithal K: PES1201801461
+* Introduction
+Write about RL in general.
+Write about Imitation learning specifically.
+
+* About the Environment
+Enduro consists of maneuvering a race car in the National Enduro, a long-distance endurance race. 
+The object of the race is to pass a certain number of cars each day.
+Doing so will allow the player to continue racing for the next day. The driver must avoid other racers and pass 200 cars on the first day, and 300 cars with each following day.
+An episode ends after 150 seconds per level.
+
+** Observation Space
+In this environment, the observation is an RGB image of the screen, which is an array of shape (210, 160, 3).
+Each action is repeatedly performed for a duration of k frames, where k is uniformly sampled from {2,3,4}
+** Action Space
+A total of 9 actions are defined in this environment.
+** Reward
+In the gym package, a reward of +1 is given for each car passed and -1 for each car that passes the agent. 
+However, the net reward cannot drop below 0. 
+
+* Dataset
+We played the Enduro game and recorded some gameplay for the model to learn from. We had three different gameplays with a total of 15 minutes
+of gameplay. (Check this) This corresponds of 15000 observations and corresponding actions taken by the "expert" human.
+
+
+| Name  | Duration | Datapoints |
+|-------+-------+-----|
+| t1 |   4:57 |  |
+| t2 |   2:43 | 4911  |
+| t3  |   7:23 | 13316 |
+
+* Model Architecture
+We tried 3 different archtiectures:
+1. SimpleNet (LeNet Architecture)
+2. BigNet
+3. ResNet18
+We started off with the simple LeNet model.
+* Training
+We tried with both SGD with Momentum and Adam as our optimizer and tuned the learning rate using a library called optuna. A batch size of 64 was used in all the experiments.
+For all the observations, we cropped the image to 160 x 160 and then converted it to a Tensor.
+* Results
+
+| Model  | Optimizer | Learning Rate | Rank (in Level 1) | Rank (in Level 2) |
+|-------+-------+-------+-------+-----|
+| SimpleNet | Adam | 0.01 |  4 | -  |
+| BigNer | Adam | 0.01 |  4 | -  |
+| ResNet18  | Adam | 0.001 |   1 | 150 |
+
+
+* Conclusion
