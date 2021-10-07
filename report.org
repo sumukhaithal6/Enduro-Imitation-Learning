@@ -1,52 +1,116 @@
-* Enduro : Imitation Learning
-** Dhruva Kashyap : PES1201801457
-** Sumukh Aithal K: PES1201801461
+#+TITLE: Enduro : Imitation Learning
+#+AUTHOR: Dhruva Kashyap
+#+AUTHOR: Sumukh Aithal K
+#+EMAIL: dhruva12kashyap@gmail.com
+#+EMAIL: sumukhaithal6@gmail.com
+#+DATE: {{{time(%d-%m-%Y)}}}
+#+OPTIONS: ^
+#+OPTIONS: *
+#+OPTIONS: '
+#+OPTIONS: \n
+#+LANGUAGE: en
+
 * Introduction
 Write about RL in general.
 Write about Imitation learning specifically.
 
 * About the Environment
-Enduro consists of maneuvering a race car in the National Enduro, a long-distance endurance race. 
-The object of the race is to pass a certain number of cars each day.
-Doing so will allow the player to continue racing for the next day. The driver must avoid other racers and pass 200 cars on the first day, and 300 cars with each following day.
-An episode ends after 150 seconds per level.
+Enduro consists of maneuvering a race car in the National Enduro, a long-distance endurance race. The object of the race is to pass a certain number of cars each day.
+
+Doing so will allow the player to continue racing for the next day. The driver must avoid other racers and pass 200 cars on the first day, and 300 cars with each following day. An episode ends after 150 seconds per level. The game also ends and resets if the player reaches 999.99KM.
+
+#+CAPTION: Activision Enduro Poster
+#+NAME:    Figure 1
+#+ATTR_LATEX: :height 200
+[[./img/enduro.png]]
+
+#+CAPTION: Enduro Gameplay
+#+NAME:    Figure 2
+#+ATTR_LATEX: :height 100
+[[./img/Enduro_Screenshot.png]]
 
 ** Observation Space
+
 In this environment, the observation is an RGB image of the screen, which is an array of shape (210, 160, 3).
-Each action is repeatedly performed for a duration of k frames, where k is uniformly sampled from {2,3,4}
+Each action is repeatedly performed for a duration of k frames, where k is uniformly sampled from {2,3,4}. The game is running at 30fps.
+
 ** Action Space
+
 A total of 9 actions are defined in this environment.
+
+The actions are as follows
+
+ 1. NOOP
+ 2. FIRE/ACCELERATE
+ 3. RIGHT
+ 4. LEFT
+ 5. DOWN/DECELERATE
+ 6. DOWNRIGHT
+ 7. DOWNLEFT
+ 8. RIGHTFIRE
+ 9. LEFTFIRE
+
 ** Reward
-In the gym package, a reward of +1 is given for each car passed and -1 for each car that passes the agent. 
-However, the net reward cannot drop below 0. 
+
+In the gym package, a reward of +1 is given for each car passed and -1 for each car that passes the agent. However, the net reward cannot drop below 0.
 
 * Dataset
-We played the Enduro game and recorded some gameplay for the model to learn from. We had three different gameplays with a total of 15 minutes
-of gameplay. (Check this) This corresponds of 15000 observations and corresponding actions taken by the "expert" human.
+We played the Enduro game and recorded some gameplay for the model to learn. We had three different gameplays with a total of 15 minutes
+of gameplay. This corresponds of 26000 observations and corresponding actions taken by the "expert" human.
 
+#+CAPTION: Number of actions per Game
+#+NAME: Table 1
+| Name | Duration | Datapoints |
+|------+----------+------------|
+| t1   |     4:57 |       8194 |
+| t2   |     2:43 |       4911 |
+| t3   |     7:23 |      13316 |
 
-| Name  | Duration | Datapoints |
-|-------+-------+-----|
-| t1 |   4:57 |  |
-| t2 |   2:43 | 4911  |
-| t3  |   7:23 | 13316 |
+The action space and state space is stored in a compressed numpy .npz format, reducing 100s of MB to 10s of MB.
 
 * Model Architecture
+
 We tried 3 different archtiectures:
+
 1. SimpleNet (LeNet Architecture)
 2. BigNet
 3. ResNet18
-We started off with the simple LeNet model.
+
+We started with the LeNet Architecture [[1]], which has been famously used in MNIST. We started with this architecture as it seemed like a simple starting point.
+
+
+We moved on to a new architecture we call BigNet, which is a modification to the LeNet architecture but with an additional convolution layer.
+
+
+Lastly, we train the model on a standard ResNet18 [[2]] architecture, which is commonly used in image recognition tasks.
+
+#+CAPTION: Number of parameters per model
+#+NAME: Table 2
+| Model    | Number of parameters |
+|----------+----------------------|
+| Simple   |              2639801 |
+| BigNet   |              1007193 |
+| ResNet18 |             11284041 |
+
 * Training
-We tried with both SGD with Momentum and Adam as our optimizer and tuned the learning rate using a library called optuna. A batch size of 64 was used in all the experiments.
+
+We tried with both SGD with Momentum and Adam as our optimizer and tuned the learning rate using a library called optuna.
+A batch size of 64 was used in all the experiments.
 For all the observations, we cropped the image to 160 x 160 and then converted it to a Tensor.
+
 * Results
 
-| Model  | Optimizer | Learning Rate | Rank (in Level 1) | Rank (in Level 2) |
-|-------+-------+-------+-------+-----|
-| SimpleNet | Adam | 0.01 |  4 | -  |
-| BigNer | Adam | 0.01 |  4 | -  |
-| ResNet18  | Adam | 0.001 |   1 | 150 |
+#+CAPTION: Results for best runs of different models
+#+NAME: Table 3
+| Model     | Optimizer | Learning Rate | Rank (in Level 1) | Rank (in Level 2) |
+|-----------+-----------+---------------+-------------------+-------------------|
+| SimpleNet | Adam      |          0.01 |                 4 |                   |
+| BigNet    | SGD       |          0.01 |                 4 |                   |
+| ResNet18  | Adam      |         0.001 |                 1 |               150 |
 
-
+* Challenges
 * Conclusion
+* References
+
+<<1>> LeNet
+<<2>> ResNet
